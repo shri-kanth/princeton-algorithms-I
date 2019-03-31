@@ -4,10 +4,10 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation
 {
-    private int n;
-    private Boolean[][] grid;
+    private final int n;
+    private final Boolean[][] grid;
     private int numberOfOpenSites;
-    private WeightedQuickUnionUF connectionManager;
+    private final WeightedQuickUnionUF connectionManager;
     private final int TOP_NODE;
     private final int BOTTOM_NODE;
 
@@ -52,6 +52,9 @@ public class Percolation
                 this.connectionManager.union(getIndex(row, col),neighbour);
             }
         }
+
+        updateIsFullRecursively(row, col);
+
     }
 
     public boolean isOpen(int row, int col){
@@ -61,12 +64,23 @@ public class Percolation
 
     public boolean isFull(int row, int col){
         validateRowAndCol(row,col);
+        return Boolean.TRUE.equals(this.grid[row-1][col-1]);
+    }
+
+    private void updateIsFullRecursively(int row,int col){
         if(!Boolean.TRUE.equals(this.grid[row-1][col-1])){
             if(this.connectionManager.connected(TOP_NODE,getIndex(row, col))){
                 this.grid[row-1][col-1] = Boolean.TRUE;
+                int[] neighbours = getNeighbours(row, col);
+
+                for(int neighbour : neighbours){
+                    if(neighbour > -1){
+                        int[] position = getRowAndCol(neighbour);
+                        updateIsFullRecursively(position[0],position[1]);
+                    }
+                }
             }
         }
-        return Boolean.TRUE.equals(this.grid[row-1][col-1]);
     }
 
     public int numberOfOpenSites(){
@@ -103,14 +117,17 @@ public class Percolation
         return ((row-1)*n+col);
     }
 
+    private int[] getRowAndCol(int index){
+        int row = index%n == 0 ? (index/n) : (index/n)+1;
+        int col = index%n == 0 ? n : index%n;
+        int[] position = {row,col};
+        return position;
+    }
+
     private void validateRowAndCol(int row,int col){
         if(row <= 0 || col <= 0 || row > this.n || col > this.n){
             throw new IllegalArgumentException();
         }
     }
 
-    public static void main( String[] args )
-    {
-
-    }
 }

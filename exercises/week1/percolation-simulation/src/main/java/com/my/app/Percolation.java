@@ -52,9 +52,6 @@ public class Percolation
                 this.connectionManager.union(getIndex(row, col),neighbour);
             }
         }
-
-        updateIsFullRecursively(row, col);
-
     }
 
     public boolean isOpen(int row, int col){
@@ -64,24 +61,16 @@ public class Percolation
 
     public boolean isFull(int row, int col){
         validateRowAndCol(row,col);
-        return Boolean.TRUE.equals(this.grid[row-1][col-1]);
-    }
-
-    private void updateIsFullRecursively(int row,int col){
-        if(!Boolean.TRUE.equals(this.grid[row-1][col-1])){
-            if(this.connectionManager.connected(TOP_NODE,getIndex(row, col))){
-                this.grid[row-1][col-1] = Boolean.TRUE;
-                int[] neighbours = getNeighbours(row, col);
-
-                for(int neighbour : neighbours){
-                    if(neighbour > -1){
-                        int[] position = getRowAndCol(neighbour);
-                        updateIsFullRecursively(position[0],position[1]);
-                    }
+        if(!Boolean.TRUE.equals(grid[row-1][col-1])){
+            if(grid[row-1][col-1] != null){
+                if(this.connectionManager.connected(TOP_NODE,getIndex(row,col))){
+                    grid[row-1][col-1] = Boolean.TRUE;
                 }
             }
         }
+        return Boolean.TRUE.equals(this.grid[row-1][col-1]);
     }
+
 
     public int numberOfOpenSites(){
         return this.numberOfOpenSites;
@@ -115,13 +104,6 @@ public class Percolation
 
     private int getIndex(int row, int col){
         return ((row-1)*n+col);
-    }
-
-    private int[] getRowAndCol(int index){
-        int row = index%n == 0 ? (index/n) : (index/n)+1;
-        int col = index%n == 0 ? n : index%n;
-        int[] position = {row,col};
-        return position;
     }
 
     private void validateRowAndCol(int row,int col){

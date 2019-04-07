@@ -15,7 +15,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int current = 0;
 
         public boolean hasNext(){
-            return current < size;
+            return (current < size) && (size > 0) ;
         }
 
         public void remove(){
@@ -28,10 +28,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
             if(current < size-1){
                 int x = StdRandom.uniform(current,size);
-                int y = StdRandom.uniform(current,size);
-                Item temp = q[x];
-                q[x] = q[y];
-                q[y] = temp;
+                Item temp = q[current];
+                q[current] = q[x];
+                q[x] = temp;
             }
             Item item = q[current];
             current++;
@@ -72,16 +71,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public Item sample() {
+        if(isEmpty()){
+            throw new NoSuchElementException();
+        }
         int index = StdRandom.uniform(size);
         return q[index];
     }
 
     private void randomize(){
         int x = StdRandom.uniform(size);
-        int y = StdRandom.uniform(size);
-        Item temp = q[x];
-        q[x] = q[y];
-        q[y] = temp;
+        Item temp = q[size-1];
+        q[size-1] = q[x];
+        q[x] = temp;
     }
 
     private void adjustCapacity(){

@@ -7,16 +7,22 @@ public class Permutation {
     public static void main(String[] args) {
         int k = Integer.parseInt(args[0]);
         RandomizedQueue<String> randomizedQueue = new RandomizedQueue<>();
-        while(StdIn.hasNextChar()){
-            randomizedQueue.enqueue(StdIn.readString());
-        }
         int count = 0;
-        for(String s : randomizedQueue){
-            if(count == k){
-                break;
+        while(!StdIn.isEmpty()){
+            if(count == k && !randomizedQueue.isEmpty()){
+                randomizedQueue.dequeue();
+                count--;
             }
             count++;
+            randomizedQueue.enqueue(StdIn.readString());
+        }
+
+        for(String s : randomizedQueue){
+            if(count == 0){
+                break;
+            }
             System.out.println(s);
+            count--;
         }
     }
 }

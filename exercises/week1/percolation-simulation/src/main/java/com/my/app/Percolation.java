@@ -59,6 +59,7 @@ public class Percolation
         return this.grid[row-1][col-1] != null;
     }
 
+    // TODO : Fix Backtracking here.
     public boolean isFull(int row, int col){
         validateRowAndCol(row,col);
         if(!Boolean.TRUE.equals(grid[row-1][col-1])){

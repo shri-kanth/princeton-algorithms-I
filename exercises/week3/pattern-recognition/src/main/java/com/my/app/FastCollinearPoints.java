@@ -36,15 +36,16 @@ public class FastCollinearPoints {
         this.segments = getSegments(pointsCopy);
     }
 
-    private LineSegment[] getSegments(Point[] points){
+    private LineSegment[] getSegments(Point[] inputPoints){
 
         List<LineSegment> segmentList = new ArrayList<>();
         List<Point> endPointList = new ArrayList<>();
         List<Double> slopeList = new ArrayList<>();
 
-        for(int i = 0; i < points.length-2; ++i){
+        for(int i = 0; i < inputPoints.length-2; ++i){
 
-            Point p = points[i];
+            Point p = inputPoints[i];
+            Point[] points = Arrays.copyOf(inputPoints,inputPoints.length);
             Arrays.sort(points,i+1,points.length,p.slopeOrder());
 
             for(int j = i+1, count = 2; j < points.length-1; ++j){
@@ -58,7 +59,7 @@ public class FastCollinearPoints {
 
                 if(presentSlope != nextSlope || j == points.length-2){
                     if(count > 3){
-                        Point endPoint = points[j];
+                        Point endPoint = (presentSlope == nextSlope) ? points[j+1] : points[j];
                         boolean alreadyProcessed = false;
                         int index = slopeList.indexOf(presentSlope);
                         if(index > -1){

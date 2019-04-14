@@ -45,13 +45,15 @@ public class FastCollinearPoints {
         for(int i = 0; i < inputPoints.length-2; ++i){
 
             Point p = inputPoints[i];
-            Point[] points = Arrays.copyOf(inputPoints,inputPoints.length);
-            Arrays.sort(points,i+1,points.length,p.slopeOrder());
+            Point[] points = Arrays.copyOfRange(inputPoints,i+1,inputPoints.length);
+            Arrays.sort(points,p.slopeOrder());
 
-            for(int j = i+1, count = 2; j < points.length-1; ++j){
+            double presentSlope = p.slopeTo(points[0]);
+            double nextSlope;
 
-                double presentSlope = p.slopeTo(points[j]);
-                double nextSlope = p.slopeTo(points[j+1]);
+            for(int j = 0, count = 2; j < points.length-1; ++j){
+
+                nextSlope = p.slopeTo(points[j+1]);
 
                 if(presentSlope == nextSlope){
                     count++;
@@ -61,13 +63,10 @@ public class FastCollinearPoints {
                     if(count > 3){
                         Point endPoint = (presentSlope == nextSlope) ? points[j+1] : points[j];
                         boolean alreadyProcessed = false;
-                        for(int k = 0; k < endPointList.size(); ++k){
-                            if(endPoint.equals(endPointList.get(k))){
-                                double slope = slopeList.get(k);
-                                if(slope == presentSlope){
-                                    alreadyProcessed = true;
-                                    break;
-                                }
+                        for(int k = 0; k < segmentList.size(); ++k){
+                            if(slopeList.get(k) == presentSlope && endPoint.equals(endPointList.get(k))){
+                                alreadyProcessed = true;
+                                break;
                             }
                         }
                         if(!alreadyProcessed){
@@ -79,6 +78,7 @@ public class FastCollinearPoints {
                     }
                     count = 2;
                 }
+                presentSlope = nextSlope;
             }
         }
 

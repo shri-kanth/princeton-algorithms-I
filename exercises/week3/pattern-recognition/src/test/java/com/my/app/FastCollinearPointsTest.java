@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class FastCollinearPointsTest {
 
-    private static final String TEST_INPUT_FILE_PATH = "/collinear/input48.txt";
+    private static final String TEST_INPUT_FILE_PATH = "/collinear/input300.txt";
 
     @Test
     public void testInputFile() throws Exception{

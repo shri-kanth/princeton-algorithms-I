@@ -61,11 +61,13 @@ public class FastCollinearPoints {
                     if(count > 3){
                         Point endPoint = (presentSlope == nextSlope) ? points[j+1] : points[j];
                         boolean alreadyProcessed = false;
-                        int index = slopeList.indexOf(presentSlope);
-                        if(index > -1){
-                            Point existingEndPoint = endPointList.get(index);
-                            if(endPoint.equals(existingEndPoint)){
-                                alreadyProcessed = true;
+                        for(int k = 0; k < endPointList.size(); ++k){
+                            if(endPoint.equals(endPointList.get(k))){
+                                double slope = slopeList.get(k);
+                                if(slope == presentSlope){
+                                    alreadyProcessed = true;
+                                    break;
+                                }
                             }
                         }
                         if(!alreadyProcessed){

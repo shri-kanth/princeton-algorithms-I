@@ -21,13 +21,16 @@ public class Point implements Comparable<Point> {
 
     private class PointSlopeComparator implements Comparator<Point>{
 
-        private Point point;
+        private final Point point;
 
         public PointSlopeComparator(Point point){
             this.point = point;
         }
 
         public int compare(Point p1, Point p2){
+
+            assert ((p1 != null) && (p2 != null));
+
             double slope1 = this.point.slopeTo(p1);
             double slope2 = this.point.slopeTo(p2);
 
@@ -88,8 +91,7 @@ public class Point implements Comparable<Point> {
        }else if(that.y == this.y){
            return +0.0;
        }else{
-           double slope = ((double)(that.y - this.y)/(double)(that.x - this.x));
-           return (Math.round(slope*100000))/(100000d);
+           return ((double)(that.y - this.y)/(double)(that.x - this.x));
        }
     }
 

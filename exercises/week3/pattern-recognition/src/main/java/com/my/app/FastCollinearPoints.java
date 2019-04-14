@@ -2,13 +2,15 @@ package com.my.app;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class FastCollinearPoints {
 
-    private Point[] points;
-
-    private LineSegment[] segments;
+    private final LineSegment[] segments;
 
     public FastCollinearPoints(Point[] points)   {
 
@@ -16,52 +18,85 @@ public class FastCollinearPoints {
             throw new IllegalArgumentException();
         }
 
-        this.points = points;
-
-        Arrays.sort(this.points);
-
-        Point p = points[0];
-
-        Arrays.sort(this.points,p.slopeOrder());
-
-        int count = 0;
-        int start = -1;
-
-        List<LineSegment> segmentList = new ArrayList<>();
-
-        for(int i = 1; i < points.length-1; ++i){
-            double presentSlope = p.slopeTo(points[i]);
-            double nextSlope = p.slopeTo(points[i+1]);
-            if(presentSlope == nextSlope){
-                if(start == -1){
-                    start = i;
-                }
-                count++;
-                if(i == points.length-2){
-                    if(count > 3){
-                        LineSegment lineSegment = new LineSegment(points[start],points[i]);
-                        segmentList.add(lineSegment);
-                    }
-                }
-                continue;
-            }else{
-                if(count > 3){
-                    LineSegment lineSegment = new LineSegment(points[start],points[i]);
-                    segmentList.add(lineSegment);
-                }
-                start = -1;
-                count = 0;
+        for(int i = 0; i < points.length; ++i){
+            if(points[i] == null){
+                throw new IllegalArgumentException();
             }
         }
 
-        this.segments = segmentList.toArray(new LineSegment[segmentList.size()]);
+        Point[] pointsCopy = Arrays.copyOf(points,points.length);
 
+        Arrays.sort(pointsCopy);
+
+        for(int i = 0; i < pointsCopy.length-1; ++i){
+            Point p1 = pointsCopy[i];
+            Point p2 = pointsCopy[i+1];
+
+            if(p1.equals(p2)){
+                throw new IllegalArgumentException();
+            }
+        }
+
+        List<LineSegment> segmentList = getSegmentList(pointsCopy);
+
+        this.segments = segmentList.toArray(new LineSegment[segmentList.size()]);
     }
+
+    private List<LineSegment> getSegmentList(Point[] points){
+
+        List<LineSegment> segmentList = new ArrayList<>();
+
+        Map<Double,Set<Integer>> map = new HashMap<>();
+
+        for(int i = 0; i < points.length-2; ++i){
+
+            Point p = points[i];
+            List<Integer> collinearPointIndex = new ArrayList<>();
+            List<Integer> tempPointIndex = new ArrayList<>();
+            Arrays.sort(points,p.slopeOrder());
+
+            for(int j = i+1, count = 2; j < points.length-1; ++j){
+
+                if(tempPointIndex.isEmpty()){
+                    tempPointIndex.add(j);
+                }
+
+                double presentSlope = p.slopeTo(points[j]);
+                double nextSlope = p.slopeTo(points[j+1]);
+
+                if(presentSlope == nextSlope){
+                    tempPointIndex.add(j+1);
+                    count++;
+                }
+
+                if(presentSlope != nextSlope || j == points.length-2){
+                    if(count > 3){
+                        boolean alreadyProcessed = (map.containsKey(Double.valueOf(presentSlope)) && map.get(presentSlope).contains(i));
+                        if(!alreadyProcessed){
+                            int lastIndex = tempPointIndex.get(tempPointIndex.size()-1);
+                            LineSegment lineSegment = new LineSegment(p,points[lastIndex]);
+                            segmentList.add(lineSegment);
+                            Set<Integer> valueSet = map.containsKey(Double.valueOf(presentSlope)) ? map.get(presentSlope) : new HashSet();
+                            valueSet.addAll(tempPointIndex);
+                            valueSet.add(i);
+                            map.put(Double.valueOf(presentSlope),valueSet);
+                            collinearPointIndex.addAll(tempPointIndex);
+                        }
+                    }
+                    tempPointIndex.clear();
+                    count = 2;
+                }
+            }
+        }
+
+        return segmentList;
+    }
+
     public int numberOfSegments() {
         return this.segments.length;
     }
 
     public LineSegment[] segments() {
-        return this.segments;
+        return Arrays.copyOf(this.segments,this.segments.length);
     }
 }

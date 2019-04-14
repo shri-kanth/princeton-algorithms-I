@@ -6,9 +6,7 @@ import java.util.List;
 
 public class BruteCollinearPoints {
 
-    private Point[] points;
-
-    private LineSegment[] segments;
+    private final LineSegment[] segments;
 
     public BruteCollinearPoints(Point[] points) {
 
@@ -16,21 +14,36 @@ public class BruteCollinearPoints {
             throw new IllegalArgumentException();
         }
 
-        this.points = points;
+        for(int i = 0; i < points.length; ++i){
+            if(points[i] == null){
+                throw new IllegalArgumentException();
+            }
+        }
 
-        Arrays.sort(this.points);
+        Point[] pointArray = Arrays.copyOf(points,points.length);
+
+        Arrays.sort(pointArray);
+
+        for(int i = 0; i < pointArray.length-1; ++i){
+            Point p1 = pointArray[i];
+            Point p2 = pointArray[i+1];
+
+            if(p1.equals(p2)){
+                throw new IllegalArgumentException();
+            }
+        }
 
         List<LineSegment> segmentList = new ArrayList<>();
 
-        for(int i = 0; i < points.length-3; ++i){
-            for(int j = i+1; j < points.length-2; ++j){
-                for(int k = j+1; k < points.length-1; ++k){
-                    for(int l = k+1; l < points.length; ++l){
+        for(int i = 0; i < pointArray.length-3; ++i){
+            for(int j = i+1; j < pointArray.length-2; ++j){
+                for(int k = j+1; k < pointArray.length-1; ++k){
+                    for(int l = k+1; l < pointArray.length; ++l){
 
-                        Point p1 = points[i];
-                        Point p2 = points[j];
-                        Point p3 = points[k];
-                        Point p4 = points[l];
+                        Point p1 = pointArray[i];
+                        Point p2 = pointArray[j];
+                        Point p3 = pointArray[k];
+                        Point p4 = pointArray[l];
 
                         double slope1 = p1.slopeTo(p2);
                         double slope2 = p1.slopeTo(p3);
@@ -52,7 +65,7 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        return this.segments;
+        return Arrays.copyOf(this.segments,this.segments.length);
     }
 }
 
